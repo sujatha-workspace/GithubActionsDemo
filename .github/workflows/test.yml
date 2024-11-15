@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: my-step
-        run: echo "Test Hello World!"
+        run: echo "PR Action!"
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Set up Python 3.9
