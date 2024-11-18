@@ -1,8 +1,17 @@
 name: Python CI
-'on':
+on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        default: dev
 jobs:
   test:
     runs-on: ubuntu-latest
