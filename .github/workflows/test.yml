@@ -45,16 +45,3 @@ jobs:
         # Export them as GitHub environment variables
         echo "ENV_NAME=$ENV_NAME" >> $GITHUB_ENV
         echo "API_URL=$API_URL" >> $GITHUB_ENV
-
-    - name: Deploy code to ${{ env.ENV_NAME }}
-      run: |
-        echo "Deploying to environment: $ENV_NAME"
-        echo "Using API: $API_URL"
-        # Add deployment scripts here
-        # Example:
-        # ./deploy.sh --env $ENV_NAME --api $API_URL
-
-    - name: Verify Deployment
-      run: |
-        echo "Deployment for $ENV_NAME successful."
-        echo "API Endpoint: $API_URL"
