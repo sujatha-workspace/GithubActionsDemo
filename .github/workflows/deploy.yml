@@ -14,7 +14,7 @@ on:
           - prod
 
 jobs:
-  print_data:
+  Load_Environment_Data:
     runs-on: ubuntu-latest
 
     steps:
