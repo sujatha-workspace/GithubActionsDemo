@@ -1,0 +1,6 @@
+db:
+  host: dev-db-host
+  port: 5432
+  username: dev_user
+  password: dev_password
+  database: dev_db
