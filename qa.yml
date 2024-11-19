@@ -1,0 +1,6 @@
+db:
+  host: qa-db-host
+  port: 5432
+  username: qa_user
+  password: qa_password
+  database: qa_db
