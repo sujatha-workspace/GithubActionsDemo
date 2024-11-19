@@ -1,4 +1,4 @@
-name: Print Environment Data
+name: Run Workflow to Deploy Code
 
 on:
   workflow_dispatch:
@@ -24,7 +24,10 @@ jobs:
 
       # Step 2: Install yq (to read YAML files)
       - name: Install yq
-        run: sudo apt-get install yq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq  # Install jq first (required for parsing JSON in some cases)
+          sudo snap install yq --classic  # Install yq via snap (v4.x compatible)
 
       # Step 3: Load environment configuration based on the input environment
       - name: Load environment configuration
@@ -42,12 +45,12 @@ jobs:
             exit 1
           fi
 
-          # Read DB details from the YAML file
-          DB_HOST=$(yq eval '.db.host' $CONFIG_FILE)
-          DB_PORT=$(yq eval '.db.port' $CONFIG_FILE)
-          DB_USERNAME=$(yq eval '.db.username' $CONFIG_FILE)
-          DB_PASSWORD=$(yq eval '.db.password' $CONFIG_FILE)
-          DB_NAME=$(yq eval '.db.database' $CONFIG_FILE)
+          # Read DB details from the YAML file using yq (v4.x syntax)
+          DB_HOST=$(yq e '.db.host' $CONFIG_FILE)
+          DB_PORT=$(yq e '.db.port' $CONFIG_FILE)
+          DB_USERNAME=$(yq e '.db.username' $CONFIG_FILE)
+          DB_PASSWORD=$(yq e '.db.password' $CONFIG_FILE)
+          DB_NAME=$(yq e '.db.database' $CONFIG_FILE)
 
           # Print the environment and DB details
           echo "Environment: ${{ github.event.inputs.environment }}"
@@ -56,4 +59,3 @@ jobs:
           echo "DB Username: $DB_USERNAME"
           echo "DB Password: $DB_PASSWORD"
           echo "DB Name: $DB_NAME"
-
