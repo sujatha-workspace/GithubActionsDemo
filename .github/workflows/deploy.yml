@@ -33,15 +33,12 @@ jobs:
       - name: Load environment configuration
         id: load_config
         run: |
-          # Dynamically load the appropriate config file based on input environment
-          if [ "${{ github.event.inputs.environment }}" == "dev" ]; then
-            CONFIG_FILE="env/dev.yml"
-          elif [ "${{ github.event.inputs.environment }}" == "qa" ]; then
-            CONFIG_FILE="env/qa.yml"
-          elif [ "${{ github.event.inputs.environment }}" == "prod" ]; then
-            CONFIG_FILE="env/prod.yml"
-          else
-            echo "Invalid environment specified"
+          # Use the environment input to directly load the correct config file
+          CONFIG_FILE="env/${{ github.event.inputs.environment }}.yml"
+
+          # Check if the selected environment file exists
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "Configuration file $CONFIG_FILE does not exist!"
             exit 1
           fi
 
