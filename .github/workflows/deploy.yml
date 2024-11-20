@@ -60,14 +60,19 @@ jobs:
           --data-urlencode 'grant_type=client_credentials' \
           --data-urlencode 'scope=https://5CAACEBF832541A1921FAD29536E3F84.integration.us-ashburn-1.ocp.oraclecloud.com:443urn:opc:resource:consumer::all')
 
-          echo "Raw response: $RESPONSE"
-          echo "response=$RESPONSE" >> $GITHUB_ENV
-          echo "::set-output name=response::$RESPONSE"
+          # Extract the access_token from the JSON response using jq
+          ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r '.access_token')
+          
+          # Output the access_token to be used in subsequent steps
+          echo "access_token=$ACCESS_TOKEN" >> $GITHUB_ENV
+          echo "::set-output name=access_token::$ACCESS_TOKEN"
 
-      - name: Check environment variable
+      - name: Execute API request using access_token
         run: |
-          echo "Environment variable 'response': ${{ env.response }}"
+          # Use the extracted access_token to make the second API call
+          RESPONSE=$(curl --silent --location 'https://design.integration.us-ashburn-1.ocp.oraclecloud.com/ic/api/integration/v1/integrations?integrationInstance=oicpaasdev-idvavkgtnntf-ia' \
+          --header "Authorization: Bearer ${{ env.access_token }}")
 
-      - name: Print response from step output
-        run: |
-          echo "Response from previous step: ${{ steps.curl-request.outputs.response }}"
+          # Output the response
+          echo "API Response: $RESPONSE"
+
