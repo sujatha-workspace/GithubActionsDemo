@@ -14,7 +14,7 @@ on:
           - prod
 
 jobs:
-  Load_Environment_Data:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
