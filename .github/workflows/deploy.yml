@@ -41,17 +41,10 @@ jobs:
             exit 1
           fi
 
-          # Read DB details from the YAML file using yq (v4.x syntax)
-          DB_HOST=$(yq e '.db.host' $CONFIG_FILE)
-          DB_PORT=$(yq e '.db.port' $CONFIG_FILE)
-          DB_USERNAME=$(yq e '.db.username' $CONFIG_FILE)
-          DB_PASSWORD=$(yq e '.db.password' $CONFIG_FILE)
-          DB_NAME=$(yq e '.db.database' $CONFIG_FILE)
-
           # Print the environment and DB details
           echo "Environment: ${{ github.event.inputs.environment }}"
-          echo "DB Host: $DB_HOST"
-          echo "DB Port: $DB_PORT"
-          echo "DB Username: $DB_USERNAME"
-          echo "DB Password: $DB_PASSWORD"
-          echo "DB Name: $DB_NAME"
+          echo "DB Host: $(yq e '.db.host' $CONFIG_FILE)"
+          echo "DB Port: $(yq e '.db.port' $CONFIG_FILE)"
+          echo "DB Username: $(yq e '.db.username' $CONFIG_FILE)"
+          echo "DB Password: $(yq e '.db.password' $CONFIG_FILE)"
+          echo "DB Name: $(yq e '.db.database' $CONFIG_FILE)"
