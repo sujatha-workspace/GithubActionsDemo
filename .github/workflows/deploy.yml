@@ -49,11 +49,10 @@ jobs:
           echo "DB Password: $(yq e '.db.password' $CONFIG_FILE)"
           echo "DB Name: $(yq e '.db.database' $CONFIG_FILE)"
           
-      # Step 3: Get token
-      - name: Get token
+      # Step 3: Get token   
+      - name: Execute cURL and store response
         id: curl-request
         run: |
-          # Execute the cURL command
           RESPONSE=$(curl --silent --location 'https://idcs-0e5fe3169e6e4b34849c6792b3305cbe.identity.oraclecloud.com:443/oauth2/v1/token' \
           --header 'Content-Type: application/x-www-form-urlencoded' \
           --header 'Accept-Charset: UTF-8' \
@@ -61,5 +60,14 @@ jobs:
           --data-urlencode 'grant_type=client_credentials' \
           --data-urlencode 'scope=https://5CAACEBF832541A1921FAD29536E3F84.integration.us-ashburn-1.ocp.oraclecloud.com:443urn:opc:resource:consumer::all')
 
-          # Output the response to an environment variable
+          echo "Raw response: $RESPONSE"
           echo "response=$RESPONSE" >> $GITHUB_ENV
+          echo "::set-output name=response::$RESPONSE"
+
+      - name: Check environment variable
+        run: |
+          echo "Environment variable 'response': ${{ env.response }}"
+
+      - name: Print response from step output
+        run: |
+          echo "Response from previous step: ${{ steps.curl-request.outputs.response }}"
