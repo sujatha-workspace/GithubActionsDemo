@@ -48,3 +48,18 @@ jobs:
           echo "DB Username: $(yq e '.db.username' $CONFIG_FILE)"
           echo "DB Password: $(yq e '.db.password' $CONFIG_FILE)"
           echo "DB Name: $(yq e '.db.database' $CONFIG_FILE)"
+          
+      # Step 3: Get token
+      - name: Get token
+        id: curl-request
+        run: |
+          # Execute the cURL command
+          RESPONSE=$(curl --silent --location 'https://idcs-0e5fe3169e6e4b34849c6792b3305cbe.identity.oraclecloud.com:443/oauth2/v1/token' \
+          --header 'Content-Type: application/x-www-form-urlencoded' \
+          --header 'Accept-Charset: UTF-8' \
+          --header 'Authorization: Basic NWJkMDI2MGI1OWY3NDY3NTliOTY2MWE0OWVmOWQyNjk6YmJjOTM1NDEtMDk5ZS00ZDM0LWI3ODktMzIyMjc3ZDU1NzAy' \
+          --data-urlencode 'grant_type=client_credentials' \
+          --data-urlencode 'scope=https://5CAACEBF832541A1921FAD29536E3F84.integration.us-ashburn-1.ocp.oraclecloud.com:443urn:opc:resource:consumer::all')
+
+          # Output the response to an environment variable
+          echo "response=$RESPONSE" >> $GITHUB_ENV
