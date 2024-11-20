@@ -1,4 +1,4 @@
-name: Python CI
+name: Git Events
 'on':
   push:
     branches:
