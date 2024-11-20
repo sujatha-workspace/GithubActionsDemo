@@ -26,7 +26,6 @@ jobs:
       - name: Install yq
         run: |
           sudo apt-get update
-          sudo apt-get install -y jq  # Install jq first (required for parsing JSON in some cases)
           sudo snap install yq --classic  # Install yq via snap (v4.x compatible)
 
       # Step 3: Load environment configuration based on the input environment
