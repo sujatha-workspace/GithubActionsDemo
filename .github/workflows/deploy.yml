@@ -30,7 +30,9 @@ jobs:
           
       - name: Get current workspace folder
         run: |
-          echo "Current workspace folder: $GITHUB_WORKSPACE"
+          echo "Listing all folders (relative to the repository) in the current workspace:"
+          find $GITHUB_WORKSPACE -type d | sed "s|$GITHUB_WORKSPACE/||"
+        shell: bash
 
       # Step 3: Load environment configuration based on the input environment
       - name: Load environment configuration
