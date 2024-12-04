@@ -2,6 +2,9 @@ name: Update Main Workflow Dispatch Inputs (Selective Update)
 
 on:
   workflow_dispatch:
+permissions:
+  contents: read
+  pages: write   
 
 jobs:
   update_workflow_dispatch:
