@@ -1,4 +1,4 @@
-name: Get Current Working Folders
+name: Dynamic Folder Dropdown Example
 
 on:
   workflow_dispatch:
@@ -7,35 +7,43 @@ on:
         description: 'Choose a folder'
         required: true
         type: choice
-        options: [] # Placeholder for dynamic options
+        options: []  # Placeholder for dynamic options - will be populated manually
 
 jobs:
   list_folders:
     runs-on: ubuntu-latest
+    outputs:
+      folder_list: ${{ steps.get_folders.outputs.folder_list }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Get Folders and Set as Output
+      - name: Get Folders
         id: get_folders
         run: |
-          # List all directories in the current working directory
-          folders=$(find . -type d -not -path '*/\.*' -not -path './.git' -exec basename {} \;)
-          echo "Found folders: $folders"
+          # Find all directories at the root of the repo, excluding .git and hidden files
+          folders=$(find . -maxdepth 1 -type d -not -path '*/\.*' -not -path './.git' -exec basename {} \;)
           
-          # Save the folders to a file or variable that can be passed to the next job
-          echo "::set-output name=folders::$folders"
+          # Store the folder list in the output
+          echo "::set-output name=folder_list::$folders"
+          echo "Found folders: $folders"
 
-      - name: Update Workflow Dispatch Inputs Dynamically (for future runs)
-        if: ${{ success() }}
-        run: |
-          # Generate a markdown file with all folder options
-          echo "## Available Folders" > FOLDER_LIST.md
-          for folder in ${{ steps.get_folders.outputs.folders }}
-          do
-            echo "- $folder" >> FOLDER_LIST.md
-          done
+      - name: Save Folder List as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: folder-list
+          path: folder_list.txt
 
-      - name: Use the Selected Folder
+  # You can add another job to process the folder based on user input
+  process_folder:
+    needs: list_folders
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Folder List
+        uses: actions/download-artifact@v3
+        with:
+          name: folder-list
+
+      - name: Process Folder Based on Input
         run: |
-          echo "User selected folder: ${{ github.event.inputs.folder }}"
+          echo "You selected the folder: ${{ github.event.inputs.folder }}"
