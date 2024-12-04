@@ -55,8 +55,8 @@ jobs:
       - name: Commit and Push Changes
         run: |
           # Configure Git user for the commit
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "sujatha-workspace"
+          git config --global user.email "suji1229@gmail.com"
           
           git remote set-url origin https://github.com/${{ github.repository }}
           # Stage, commit, and push changes
