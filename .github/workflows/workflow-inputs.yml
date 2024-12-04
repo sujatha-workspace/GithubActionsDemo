@@ -36,27 +36,24 @@ jobs:
           # Path to the main workflow YAML file
           WORKFLOW_FILE=".github/workflows/main-workflow.yml"
 
-          # Check if the YAML file exists
-          if [ ! -f "$WORKFLOW_FILE" ]; then
-            echo "File $WORKFLOW_FILE does not exist!"
-            exit 1
-          fi
-
           # Use 'sed' to update the SOURCE_REGION dropdown options in the YAML file
           # This will replace only the options for SOURCE_REGION
           sed -i "/SOURCE_REGION:/,/options:/ { /options:/! {p;}; s|^ *-.*|${source_region_options//\n/\\n}| }" "$WORKFLOW_FILE"
 
       - name: Check if the file has changed
-        id: check_diff
         run: |
-          # Check if the YAML file has changed
-          git diff --exit-code .github/workflows/main-workflow.yml || echo "File has changed"
+          # Check if the YAML file has changed and if so, proceed with commit
+          git diff --exit-code .github/workflows/main-workflow.yml || echo "File has changed, committing..."
 
-      - name: Commit Changes to Main Workflow YAML (if modified)
-        if: steps.check_diff.outputs.exit_code != 0
+      - name: Commit Changes if the file has changed
         run: |
+          # If changes are detected, commit and push them
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add .github/workflows/main-workflow.yml
-          git commit -m "Update SOURCE_REGION dropdown options dynamically"
-          git push origin HEAD
+          
+          # Check if changes were detected
+          git diff --exit-code .github/workflows/main-workflow.yml || (
+            git add .github/workflows/main-workflow.yml
+            git commit -m "Update SOURCE_REGION dropdown options dynamically"
+            git push origin HEAD
+          )
