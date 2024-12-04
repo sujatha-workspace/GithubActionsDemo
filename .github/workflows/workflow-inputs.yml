@@ -46,14 +46,13 @@ jobs:
 
       - name: Commit and Push Changes
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}  # Use your PAT token
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
+          # Configure Git user for the commit
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Add and commit changes
+          # Stage, commit, and push changes
           git add .github/workflows/main-workflow.yml
-          git commit -m "Update SOURCE_REGION dropdown options dynamically"
-          
-          # Push changes using PAT for authentication
-          git push https://github.com/${{ github.repository }}.git HEAD:${{ github.ref }} --force
+          git commit -m "Update SOURCE_REGION options dynamically"
+          git push origin HEAD:main
