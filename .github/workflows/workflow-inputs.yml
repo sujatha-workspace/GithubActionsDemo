@@ -37,17 +37,23 @@ jobs:
           WORKFLOW_FILE=".github/workflows/main-workflow.yml"
 
           # Use 'sed' to update the SOURCE_REGION dropdown options in the YAML file
-          # We're finding the "SOURCE_REGION" dropdown and replacing its options
-          sed -i '/SOURCE_REGION:/,/options:/ { /options:/! {p;}; s|^ *-.*|${source_region_options//\n/\\n}| }' "$WORKFLOW_FILE"
+          sed -i "/SOURCE_REGION:/,/options:/ { /options:/! {p;}; s|^ *-.*|${source_region_options//\n/\\n}| }" "$WORKFLOW_FILE"
 
       - name: Commit Changes to Main Workflow YAML
         run: |
-          git config --global user.email "suji1229@gmail.com"
+          # Configure git user for commit
           git config --global user.name "sujatha-workspace"
-          
-          # Add the updated workflow file
-          git add .github/workflows/main-workflow.yml
+          git config --global user.email "suji1229@gmail.com"
 
-          # Commit and push the changes
-          git commit -m "Dynamically update SOURCE_REGION dropdown options"
+          # Add the updated workflow file and commit the changes
+          git add "$WORKFLOW_FILE"
+          git commit -m "Update SOURCE_REGION dropdown options dynamically"
+          git push
+
+      - name: Push Changes Using Personal Access Token (PAT)
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          # Configure git to use the Personal Access Token (PAT)
+          git remote set-url origin https://x-access-token:${PAT_TOKEN}@github.com/sujatha-workspace/GithubActionsDemo.git
           git push
