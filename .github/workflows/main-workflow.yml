@@ -1,0 +1,18 @@
+name: Main Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      SOURCE_REGION:
+        type: choice
+        description: "Select the source region"
+        options:
+          - us-west-1
+        required: true      
+
+jobs:
+  process_data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
