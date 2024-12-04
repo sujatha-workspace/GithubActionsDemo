@@ -35,27 +35,25 @@ jobs:
         run: |
           # Path to the main workflow YAML file
           WORKFLOW_FILE=".github/workflows/main-workflow.yml"
-          
-          # Ensure the SOURCE_REGION dropdown exists in the workflow YAML
-          if grep -q 'SOURCE_REGION:' "$WORKFLOW_FILE"; then
-            # Use 'sed' to update the SOURCE_REGION dropdown options in the YAML file
-            sed -i '/SOURCE_REGION:/,/options:/ { /options:/! {p;}; s|^ *-.*|${source_region_options//\n/\\n}| }' "$WORKFLOW_FILE"
-          else
-            echo "SOURCE_REGION dropdown not found in workflow file."
-          fi
 
-      - name: Check for Changes and Commit Updated Workflow
+          # Use 'sed' to update the SOURCE_REGION dropdown options in the YAML file
+          # This will replace only the options for SOURCE_REGION
+          sed -i "/SOURCE_REGION:/,/options:/ { /options:/! {p;}; s|^ *-.*|${source_region_options//\n/\\n}| }" "$WORKFLOW_FILE"
+
+      - name: Check if the file has changed
         run: |
-          # Check if there were any changes to the YAML file
-          git diff --quiet "$WORKFLOW_FILE"
-          
-          # If changes exist, commit and push the updated workflow file
-          if [[ $? -ne 0 ]]; then
-            git config --global user.email "suji1229@gmail.com"
-            git config --global user.name "sujatha-workspace"
-            git add "$WORKFLOW_FILE"
-            git commit -m "Update SOURCE_REGION options dynamically"
-            git push https://github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
+          # Check if the YAML file has changed
+          git diff --exit-code .github/workflows/main-workflow.yml || echo "File has changed"
+
+      - name: Commit Changes to Main Workflow YAML (only if there are changes)
+        run: |
+          # Check if there were any changes and commit only if there are changes
+          if git diff --quiet .github/workflows/main-workflow.yml; then
+            echo "No changes detected, skipping commit."
           else
-            echo "No changes made to the workflow file."
+            git config --global user.email "github-actions@github.com"
+            git config --global user.name "GitHub Actions"
+            git add .github/workflows/main-workflow.yml
+            git commit -m "Update SOURCE_REGION dropdown options"
+            git push
           fi
