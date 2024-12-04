@@ -1,0 +1,53 @@
+name: Update Main Workflow Dispatch Inputs (Selective Update)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update_workflow_dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: List all folders
+        id: get_folders
+        run: |
+          # Find all directories at the root of the repository (ignoring hidden files and .git)
+          folders=$(find . -maxdepth 1 -type d -not -path '*/\.*' -not -path './.git' -exec basename {} \; | grep -v '^.$' | tr '\n' ' ')
+
+          # Save folder list to environment variable for later use
+          echo "folders=$folders" >> $GITHUB_ENV
+
+      - name: Prepare Folder Options for SOURCE_REGION Dropdown
+        id: prepare_folder_options
+        run: |
+          # Prepare the dropdown options for SOURCE_REGION (excluding TARGET_REGION)
+          source_region_options=""
+          for folder in ${{ env.folders }}; do
+            source_region_options="${source_region_options}\n- ${folder}"
+          done
+
+          # Save the options as an environment variable for use in the next step
+          echo "source_region_options=${source_region_options}" >> $GITHUB_ENV
+
+      - name: Update Main Workflow YAML (only SOURCE_REGION)
+        run: |
+          # Path to the main workflow YAML file
+          WORKFLOW_FILE=".github/workflows/main-workflow.yml"
+
+          # Use 'sed' to update the SOURCE_REGION dropdown options in the YAML file
+          # We're finding the "SOURCE_REGION" dropdown and replacing its options
+          sed -i '/SOURCE_REGION:/,/options:/ { /options:/! {p;}; s|^ *-.*|${source_region_options//\n/\\n}| }' "$WORKFLOW_FILE"
+
+      - name: Commit Changes to Main Workflow YAML
+        run: |
+          git config --global user.email "suji1229@gmail.com"
+          git config --global user.name "sujatha-workspace"
+          
+          # Add the updated workflow file
+          git add .github/workflows/main-workflow.yml
+
+          # Commit and push the changes
+          git commit -m "Dynamically update SOURCE_REGION dropdown options"
+          git push
