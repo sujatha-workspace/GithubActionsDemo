@@ -51,8 +51,8 @@ jobs:
           if git diff --quiet .github/workflows/main-workflow.yml; then
             echo "No changes detected, skipping commit."
           else
-            git config --global user.email "github-actions@github.com"
-            git config --global user.name "GitHub Actions"
+            git config --global user.email "suji1229@gmail.com"
+            git config --global user.name "sujatha-workspace"
             git add .github/workflows/main-workflow.yml
             git commit -m "Update SOURCE_REGION dropdown options"
             git push
