@@ -57,8 +57,8 @@ jobs:
           # Configure Git user for the commit
           git config --global user.name "sujatha-workspace"
           git config --global user.email "suji1229@gmail.com"
-          
-          git remote set-url origin https://github.com/${{ github.repository }}
+
+          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
           # Stage, commit, and push changes
           git add .github/workflows/main-workflow.yml
           git commit -m "Update SOURCE_REGION options dynamically"
