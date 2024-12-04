@@ -2,6 +2,7 @@ name: Update Main Workflow Dispatch Inputs (Selective Update)
 
 on:
   workflow_dispatch:
+  
 permissions:
   contents: read
   pages: write   
@@ -45,7 +46,11 @@ jobs:
       - name: Check if the file has changed
         run: |
           # Check if the YAML file has changed
-          git diff --exit-code .github/workflows/main-workflow.yml || echo "Changes detected"
+          if git diff --exit-code .github/workflows/main-workflow.yml; then
+            echo "No changes detected."
+          else
+            echo "Changes detected."
+          fi
 
       - name: Commit and Push Changes
         run: |
@@ -57,4 +62,4 @@ jobs:
           # Stage, commit, and push changes
           git add .github/workflows/main-workflow.yml
           git commit -m "Update SOURCE_REGION options dynamically"
-          git push https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.ref }}n
+          git push https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.ref }}
