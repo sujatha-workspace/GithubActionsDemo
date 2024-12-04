@@ -13,14 +13,13 @@ jobs:
       - name: List all folders
         id: get_folders
         run: |
-          # Find all directories at the root of the repository
-          # Exclude hidden files and .git folder
-          folders=$(find . -maxdepth 1 -type d -not -path '*/\.*' -not -path './.git' -exec basename {} \;)
+          # Find all directories at the root of the repository (ignoring hidden files and .git)
+          folders=$(find . -maxdepth 1 -type d -not -path '*/\.*' -not -path './.git' -exec basename {} \; | grep -v '^.$')
           
           # Output the list of folders
           echo "Folders found: $folders"
           
-          # Save folder list to an output
+          # Save the folder list to an output
           echo "::set-output name=folder_list::$folders"
 
       - name: Display the Folder List
