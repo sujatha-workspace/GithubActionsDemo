@@ -16,13 +16,10 @@ jobs:
           # Find all directories at the root of the repository (ignoring hidden files and .git)
           folders=$(find . -maxdepth 1 -type d -not -path '*/\.*' -not -path './.git' -exec basename {} \; | grep -v '^.$')
           
-          # Output the list of folders
-          echo "Folders found: $folders"
-          
-          # Save the folder list to an output
-          echo "::set-output name=folder_list::$folders"
+          # Output the list of folders to the environment file
+          echo "folders=$folders" >> $GITHUB_ENV
 
       - name: Display the Folder List
         run: |
-          # Display the folder list output
-          echo "The folders are: ${{ steps.get_folders.outputs.folder_list }}"
+          # Display the folder list from the environment variable
+          echo "The folders are: ${{ env.folders }}"
