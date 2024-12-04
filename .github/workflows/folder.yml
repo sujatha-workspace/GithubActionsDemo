@@ -1,0 +1,41 @@
+name: Get Current Working Folders
+
+on:
+  workflow_dispatch:
+    inputs:
+      folder:
+        description: 'Choose a folder'
+        required: true
+        type: choice
+        options: [] # Placeholder for dynamic options
+
+jobs:
+  list_folders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Get Folders and Set as Output
+        id: get_folders
+        run: |
+          # List all directories in the current working directory
+          folders=$(find . -type d -not -path '*/\.*' -not -path './.git' -exec basename {} \;)
+          echo "Found folders: $folders"
+          
+          # Save the folders to a file or variable that can be passed to the next job
+          echo "::set-output name=folders::$folders"
+
+      - name: Update Workflow Dispatch Inputs Dynamically (for future runs)
+        if: ${{ success() }}
+        run: |
+          # Generate a markdown file with all folder options
+          echo "## Available Folders" > FOLDER_LIST.md
+          for folder in ${{ steps.get_folders.outputs.folders }}
+          do
+            echo "- $folder" >> FOLDER_LIST.md
+          done
+
+      - name: Use the Selected Folder
+        run: |
+          echo "User selected folder: ${{ github.event.inputs.folder }}"
