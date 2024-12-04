@@ -35,25 +35,25 @@ jobs:
         run: |
           # Path to the main workflow YAML file
           WORKFLOW_FILE=".github/workflows/main-workflow.yml"
-
-          # Use 'sed' to update the SOURCE_REGION dropdown options in the YAML file
-          # This will replace only the options for SOURCE_REGION
-          sed -i "/SOURCE_REGION:/,/options:/ { /options:/! {p;}; s|^ *-.*|${source_region_options//\n/\\n}| }" "$WORKFLOW_FILE"
+          
+          # Replace the SOURCE_REGION options with the dynamic list
+          sed -i "s|  - .*$|${source_region_options//\n/\\n}|" "$WORKFLOW_FILE"
 
       - name: Check if the file has changed
         run: |
-          # Check if the YAML file has changed and if so, proceed with commit
-          git diff --exit-code .github/workflows/main-workflow.yml || echo "File has changed, committing..."
+          # Check if the YAML file has changed
+          git diff --exit-code .github/workflows/main-workflow.yml || echo "Changes detected"
 
-      - name: Commit Changes if the file has changed
+      - name: Commit and Push Changes
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}  # Use your PAT token
         run: |
-          # If changes are detected, commit and push them
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           
-          # Check if changes were detected
-          git diff --exit-code .github/workflows/main-workflow.yml || (
-            git add .github/workflows/main-workflow.yml
-            git commit -m "Update SOURCE_REGION dropdown options dynamically"
-            git push origin HEAD
-          )
+          # Add and commit changes
+          git add .github/workflows/main-workflow.yml
+          git commit -m "Update SOURCE_REGION dropdown options dynamically"
+          
+          # Push changes using PAT for authentication
+          git push https://github.com/${{ github.repository }}.git HEAD:${{ github.ref }} --force
