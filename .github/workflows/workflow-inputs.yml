@@ -2,10 +2,10 @@ name: Update Main Workflow Dispatch Inputs (Selective Update)
 
 on:
   workflow_dispatch:
-  
+
 permissions:
-  contents: write
-  pages: write
+  contents: write   # This allows modifying repository files (including workflows)
+  pages: write      # (Optional, only if relevant to your use case)
 
 jobs:
   update_workflow_dispatch:
