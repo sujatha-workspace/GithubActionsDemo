@@ -5,8 +5,7 @@ on:
   
 permissions:
   contents: write
-  pages: write 
-  workflows: write
+  pages: write
 
 jobs:
   update_workflow_dispatch:
